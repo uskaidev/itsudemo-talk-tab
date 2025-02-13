@@ -59,10 +59,9 @@ export default function OutdoorActivities() {
                 </div>
               </div>
 
-              <Link href="/outside/details" passHref legacyBehavior>
+              <Link href="/outside/details">
                 <Button
                   className="w-full h-12 text-lg bg-[#276204] hover:bg-[#1E4A03] text-white font-zen-maru-gothic mt-auto"
-                  component="a"
                 >
                   詳細を見る
                 </Button>
@@ -74,4 +73,3 @@ export default function OutdoorActivities() {
     </div>
   )
 }
-
