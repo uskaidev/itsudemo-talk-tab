@@ -2,6 +2,12 @@ import { Zen_Maru_Gothic } from "next/font/google"
 import "./globals.css"
 import type React from "react"
 import { ClientSidebar } from "@/components/client-sidebar"
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'いつでもトーク',
+  description: 'みなさんとお話したり、自由にアクティビティを行うサポートをします',
+}
 
 const zenMaruGothic = Zen_Maru_Gothic({
   weight: ["500", "700", "900"],
@@ -21,4 +27,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
-

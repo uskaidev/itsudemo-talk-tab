@@ -7,22 +7,22 @@ import { VideoModal } from "@/components/video-modal"
 const exerciseVideos = [
   {
     id: 1,
-    title: "スローエアロビクス",
-    duration: "10分",
+    title: "スローエアロビック",
+    duration: "所要時間10分",
     thumbnailUrl: "https://img.youtube.com/vi/d2EDVVBj7qE/0.jpg",
     videoSrc: "https://www.youtube.com/embed/d2EDVVBj7qE",
   },
   {
     id: 2,
     title: "スポーツ体操",
-    duration: "5分",
+    duration: "所要時間5分",
     thumbnailUrl: "https://img.youtube.com/vi/mHzN0IEsUcs/0.jpg",
     videoSrc: "https://www.youtube.com/embed/mHzN0IEsUcs",
   },
   {
     id: 3,
     title: "うた体操〜スキーの歌〜",
-    duration: "10分",
+    duration: "所要時間10分",
     thumbnailUrl: "https://img.youtube.com/vi/R2PsFGPN6-k/0.jpg",
     videoSrc: "https://www.youtube.com/embed/R2PsFGPN6-k",
   },
@@ -33,9 +33,10 @@ export default function ExercisePage() {
 
   return (
     <div className="h-full w-full p-8 flex flex-col scroll-container">
-      <h1 className="text-3xl font-bold mb-6 font-zen-maru-gothic text-center">運動する</h1>
+      <h1 className="text-3xl font-bold mb-2 font-zen-maru-gothic text-center">運動する</h1>
+      <h2 className="text-lg mb-6 font-zen-maru-gothic text-center">画像をタッチすると動画が自動的に再生されます。</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mx-auto">
         {exerciseVideos.map((video) => (
           <VideoCard
             key={video.id}
@@ -58,4 +59,3 @@ export default function ExercisePage() {
     </div>
   )
 }
-
