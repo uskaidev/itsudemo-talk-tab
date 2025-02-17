@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { MainButton } from "@/components/main-button"
+import { TodayVideoButton } from "@/components/today-video-button"
 
 export default function Home() {
   return (
@@ -42,7 +43,7 @@ export default function Home() {
           </p>
         </div>
       </div>
+      <TodayVideoButton />
     </div>
   )
 }
-
