@@ -12,7 +12,10 @@ interface VideoModalProps {
 export function VideoModal({ isOpen, onClose, videoTitle, videoSrc }: VideoModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] p-4 flex flex-col">
+      <DialogContent className="max-w-[90vw] max-h-[90vh] p-4 flex flex-col" aria-describedby="video-description">
+        <div id="video-description" className="sr-only">
+          {videoTitle}の動画を表示しています。
+        </div>
         {/* 閉じるボタン */}
         <button
           onClick={onClose}
@@ -37,7 +40,7 @@ export function VideoModal({ isOpen, onClose, videoTitle, videoSrc }: VideoModal
         <div className="h-[70vh] w-full">
           <iframe
             className="w-full h-full"
-            src={videoSrc}
+            src={`${videoSrc}${videoSrc.includes('?') ? '&' : '?'}autoplay=1`}
             title={videoTitle}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
