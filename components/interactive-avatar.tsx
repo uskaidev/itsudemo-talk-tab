@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { StartAvatarResponse } from "@heygen/streaming-avatar";
 import StreamingAvatar, {
   AvatarQuality,
@@ -19,39 +20,35 @@ import {
   Tabs,
   Tab,
 } from "@nextui-org/react";
-import { useEffect, useRef, useState, useCallback } from "react";
 import { useMemoizedFn } from "ahooks";
 import InteractiveAvatarTextInput from "./interactive-avatar-text-input";
-import { AVATARS, STT_LANGUAGE_LIST } from "../app/lib/constants";
+import { AVATARS, STT_LANGUAGE_LIST, AVATAR_CONFIG } from "@/app/lib/constants";
+import { ChatMessage, StreamResponse, TalkingMessage } from "@/app/lib/types";
 
 interface InteractiveAvatarProps {
   initialKnowledgeId?: string;
   initialAvatarId?: string;
   initialLanguage?: string;
+  setShowChat: (show: boolean) => void;
 }
 
 export default function InteractiveAvatar({
   initialKnowledgeId = "97ac3c7dcb5742cdbe572ab9d8379342",
   initialAvatarId = "Wayne_20240711",
   initialLanguage = "ja",
+  setShowChat,
 }: InteractiveAvatarProps) {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
   const [stream, setStream] = useState<MediaStream>();
   const [debug, setDebug] = useState<string>();
-  const [chatHistory, setChatHistory] = useState<Array<{
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: number;
-  }>>([]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [knowledgeId] = useState<string>(initialKnowledgeId);
   const [avatarId] = useState<string>(initialAvatarId);
   const [language] = useState<string>(initialLanguage);
-  const [data, setData] = useState<StartAvatarResponse>();
   const [text, setText] = useState<string>("");
   const mediaStream = useRef<HTMLVideoElement>(null);
-  const avatar = useRef<StreamingAvatar | null>(null);
-  const [chatMode, setChatMode] = useState("voice_mode");
+  const avatar = useRef<any>(null);
   const [isUserTalking, setIsUserTalking] = useState(false);
   const [currentAvatarMessage, setCurrentAvatarMessage] = useState('');
   const [currentUserMessage, setCurrentUserMessage] = useState('');
@@ -69,14 +66,14 @@ export default function InteractiveAvatar({
         throw new Error("Empty token received");
       }
       return token;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching access token:", error);
       setDebug(`Access token error: ${error.message}`);
       throw error;
     }
   }
 
-  const setupEventHandlers = useCallback((avatarInstance: StreamingAvatar) => {
+  const setupEventHandlers = useCallback((avatarInstance: any) => {
     setDebug("Setting up event handlers");
 
     const handleAvatarStartTalking = () => {
@@ -87,7 +84,7 @@ export default function InteractiveAvatar({
       // No action needed
     };
 
-    const handleAvatarTalkingMessage = (message: any) => {
+    const handleAvatarTalkingMessage = (message: TalkingMessage) => {
       if (message?.detail?.text?.trim()) {
         setCurrentAvatarMessage(prev => {
           const newMessage = prev ? `${prev} ${message.detail.text}` : message.detail.text;
@@ -111,7 +108,7 @@ export default function InteractiveAvatar({
       }
     };
 
-    const handleUserTalkingMessage = (message: any) => {
+    const handleUserTalkingMessage = (message: TalkingMessage) => {
       if (message?.detail?.text?.trim()) {
         setCurrentUserMessage(prev => {
           const newMessage = prev ? `${prev} ${message.detail.text}` : message.detail.text;
@@ -140,7 +137,7 @@ export default function InteractiveAvatar({
       endSession();
     };
 
-    const handleStreamReady = (event: any) => {
+    const handleStreamReady = (event: StreamResponse) => {
       setDebug("Stream ready");
       setStream(event.detail);
     };
@@ -179,7 +176,7 @@ export default function InteractiveAvatar({
     };
   }, [currentAvatarMessage, currentUserMessage]);
 
-  const startVoiceChat = useCallback(async (avatarInstance: StreamingAvatar) => {
+  const startVoiceChat = useCallback(async (avatarInstance: any) => {
     if (!avatarInstance) return;
     
     try {
@@ -191,7 +188,7 @@ export default function InteractiveAvatar({
         interimResults: true
       });
       setDebug("Voice chat started successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error starting voice chat:", error);
       setDebug(`Voice chat error: ${error.message}`);
       throw error;
@@ -221,7 +218,7 @@ export default function InteractiveAvatar({
       });
       
       setText("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Speak error:", error);
       setDebug(`Speak error: ${error.message}`);
     } finally {
@@ -233,7 +230,7 @@ export default function InteractiveAvatar({
     try {
       if (!avatar.current) return;
       await avatar.current.interrupt();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Interrupt error:", error);
       setDebug(`Interrupt error: ${error.message}`);
     }
@@ -266,38 +263,11 @@ export default function InteractiveAvatar({
     }
   }
 
-  const handleChangeChatMode = useCallback(async (key: string) => {
-    setDebug(`Chat mode change requested: ${key}`);
-    if (key === chatMode || !avatar.current) return;
+  async function handleEndAndReturn() {
+    await endSession();
+    setShowChat(false);
+  }
 
-    try {
-      if (key === "text_mode") {
-        setDebug("Switching to text mode");
-        await avatar.current.closeVoiceChat();
-        setChatMode("text_mode");
-      } else {
-        setDebug("Switching to voice mode");
-        await startVoiceChat(avatar.current);
-        setChatMode("voice_mode");
-      }
-    } catch (error) {
-      console.error("Chat mode change error:", error);
-      setDebug(`Chat mode change error: ${error.message}`);
-      setChatMode("text_mode");
-    }
-  }, [chatMode, startVoiceChat]);
-
-  useEffect(() => {
-    if (chatMode === "text_mode" && avatar.current) {
-      if (text) {
-        setDebug("Start listening in text mode");
-        avatar.current.startListening();
-      } else {
-        setDebug("Stop listening in text mode");
-        avatar.current.stopListening();
-      }
-    }
-  }, [text, chatMode]);
 
   useEffect(() => {
     if (stream && mediaStream.current) {
@@ -334,23 +304,45 @@ export default function InteractiveAvatar({
     }
   }, [chatHistory]);
 
-  useEffect(() => {
-    const suppressDevToolsMessage = () => {
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-      const win = iframe.contentWindow;
-      if (win && win.console) {
-        win.console.log = () => {};
-      }
-      document.body.removeChild(iframe);
-    };
-    suppressDevToolsMessage();
-  }, []);
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000;
 
   useEffect(() => {
     let mounted = true;
     let cleanup: (() => void) | undefined;
+    let retryCount = 0;
+
+    const initAvatar = async (token: string): Promise<StreamingAvatar | null> => {
+      try {
+        setDebug("Creating new avatar instance");
+        const avatarInstance = new StreamingAvatar({ token });
+        cleanup = setupEventHandlers(avatarInstance);
+
+        if (!mounted) {
+          cleanup?.();
+          return null;
+        }
+
+        setDebug("Creating avatar...");
+        await avatarInstance.createStartAvatar({
+          quality: AvatarQuality.Low,
+          avatarName: avatarId,
+          knowledgeId: knowledgeId,
+          voice: {
+            rate: AVATAR_CONFIG.VOICE_RATE,
+            emotion: VoiceEmotion.EXCITED,
+          },
+          language: language,
+          disableIdleTimeout: AVATAR_CONFIG.IDLE_TIMEOUT,
+        });
+
+        return avatarInstance;
+      } catch (error) {
+        cleanup?.();
+        throw error;
+      }
+    };
 
     const init = async () => {
       if (!mounted) return;
@@ -358,58 +350,53 @@ export default function InteractiveAvatar({
       try {
         setDebug("Starting session...");
         
-        const token = await fetchAccessToken();
-        if (!token || !mounted) return;
-
+        // Clean up existing session if any
         if (avatar.current) {
           setDebug("Cleaning up existing session");
-          await avatar.current.closeVoiceChat().catch(console.error);
-          await avatar.current.stopAvatar().catch(console.error);
-          avatar.current = null;
-          setStream(undefined);
+          await endSession();
         }
 
-        setDebug("Creating new avatar instance");
-        const avatarInstance = new StreamingAvatar({ token });
-        cleanup = setupEventHandlers(avatarInstance);
+        while (retryCount < MAX_RETRIES) {
+          try {
+            const token = await fetchAccessToken();
+            if (!token || !mounted) return;
 
-        if (!mounted) {
-          cleanup();
-          return;
+            // Add delay before avatar initialization
+            await delay(1000);
+
+            const avatarInstance = await initAvatar(token);
+            if (!avatarInstance || !mounted) return;
+
+            avatar.current = avatarInstance;
+            setDebug("Avatar created successfully");
+
+            // Add delay before voice chat initialization
+            await delay(1000);
+
+            setDebug("Initializing voice chat...");
+            await startVoiceChat(avatarInstance);
+            setDebug("Voice chat initialized");
+            
+            // Successfully initialized
+            return;
+          } catch (error: any) {
+            retryCount++;
+            console.error(`Attempt ${retryCount} failed:`, error);
+            setDebug(`Error (attempt ${retryCount}): ${error.message}`);
+            
+            if (retryCount < MAX_RETRIES) {
+              setDebug(`Retrying in ${RETRY_DELAY/1000} seconds...`);
+              await delay(RETRY_DELAY);
+            } else {
+              throw error;
+            }
+          }
         }
-
-        setDebug("Creating avatar...");
-        const res = await avatarInstance.createStartAvatar({
-          quality: AvatarQuality.Low,
-          avatarName: avatarId,
-          knowledgeId: knowledgeId,
-          voice: {
-            rate: 1.5,
-            emotion: VoiceEmotion.EXCITED,
-          },
-          language: language,
-          disableIdleTimeout: true,
-        });
-
-        if (!mounted) {
-          cleanup();
-          return;
-        }
-
-        avatar.current = avatarInstance;
-        setData(res);
-        setDebug("Avatar created successfully");
-
-        if (chatMode === "voice_mode") {
-          setDebug("Initializing voice mode...");
-          await startVoiceChat(avatarInstance);
-          setDebug("Voice mode initialized");
-        }
-      } catch (error) {
+      } catch (error: any) {
         if (mounted) {
           console.error("Session start error:", error);
-          setDebug(`Error: ${error.message}`);
-          if (cleanup) cleanup();
+          setDebug(`Final error: ${error.message}`);
+          cleanup?.();
           await endSession();
         }
       }
@@ -424,142 +411,64 @@ export default function InteractiveAvatar({
 
     return () => {
       mounted = false;
-      if (cleanup) cleanup();
+      cleanup?.();
       endSession();
     };
-  }, [setupEventHandlers, avatarId, knowledgeId, language, chatMode, startVoiceChat]);
+  }, [setupEventHandlers, avatarId, knowledgeId, language, startVoiceChat]);
 
   return (
-    <div className="w-full flex flex-col gap-4 relative">
-      <div className="flex gap-4">
-        <Card className="flex-1">
-          <CardBody className="relative h-[500px] p-0">
-            <div className="h-full w-full bg-black rounded-lg overflow-hidden">
-              <div className="relative w-full h-full">
-                {stream ? (
-                  <video
-                    ref={mediaStream}
-                    autoPlay
-                    playsInline
-                    className="w-full h-full object-contain"
-                  >
-                    <track kind="captions" />
-                  </video>
-                ) : (
-                  <div className="w-full h-full flex justify-center items-center">
-                    <Spinner color="default" size="lg" />
-                  </div>
-                )}
-                
-                <div className="absolute top-4 left-0 right-0 z-50 px-4">
-                  {currentUserMessage && (
-                    <div className="p-2 rounded-lg bg-indigo-100/90 dark:bg-indigo-900/90 ml-auto max-w-[80%] mb-2 shadow-lg">
-                      <p className="text-sm font-medium">{currentUserMessage}</p>
-                    </div>
-                  )}
-                  {currentAvatarMessage && (
-                    <div className="p-2 rounded-lg bg-gray-100/90 dark:bg-gray-800/90 mr-auto max-w-[80%] shadow-lg">
-                      <p className="text-sm font-medium">{currentAvatarMessage}</p>
+    <div className="w-full relative">
+      <div>
+        <Card className="w-full scale-110 mb-8">
+          <CardBody className="p-0">
+            <div className="w-full bg-black rounded-lg overflow-hidden">
+              <div className="relative w-full pt-[56.25%]">
+                <div className="absolute top-0 left-0 w-full h-full">
+                  {stream ? (
+                    <video
+                      ref={mediaStream}
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-cover object-center"
+                    >
+                      <track kind="captions" />
+                    </video>
+                  ) : (
+                    <div className="w-full h-full flex flex-col justify-center items-center gap-6 bg-black/80">
+                      <Spinner color="default" size="lg" />
+                      <div className="text-xl font-zen-maru-gothic text-white">
+                        準備中です
+                      </div>
+                      <div className="w-64 h-4 bg-gray-100/20 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-[#98996B] to-[#276204] rounded-full animate-loading-progress"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
+                
               </div>
 
-              <div className="absolute bottom-3 right-3 z-50 flex flex-col gap-2">
-                <Button
-                  className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white rounded-lg shadow-lg"
-                  size="md"
-                  variant="shadow"
-                  onPress={handleInterrupt}
-                  isDisabled={!avatar.current}
-                  aria-label="アバターの発話を中断"
-                >
-                  Interrupt task
-                </Button>
-                <Button
-                  className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white rounded-lg shadow-lg"
-                  size="md"
-                  variant="shadow"
-                  onPress={endSession}
-                  isDisabled={!avatar.current}
-                  aria-label="セッションを終了"
-                >
-                  End session
-                </Button>
-              </div>
             </div>
           </CardBody>
           <Divider />
-          <CardFooter className="flex flex-col gap-3 relative">
-            <Tabs
-              aria-label="Options"
-              selectedKey={chatMode}
-              onSelectionChange={(key: string) => {
-                setDebug(`Tab selection changed: ${key}`);
-                void handleChangeChatMode(key);
-              }}
-            >
-              <Tab key="text_mode" title="Text mode" />
-              <Tab key="voice_mode" title="Voice mode" />
-            </Tabs>
-            {chatMode === "text_mode" ? (
-              <div className="w-full flex relative">
-                <InteractiveAvatarTextInput
-                  disabled={!stream}
-                  input={text}
-                  label="Chat"
-                  loading={isLoadingRepeat}
-                  placeholder="Type something for the avatar to respond"
-                  setInput={setText}
-                  onSubmit={handleSpeak}
-                />
-                {text && (
-                  <Chip className="absolute right-16 top-3">Listening</Chip>
-                )}
-              </div>
-            ) : (
-              <div className="w-full text-center">
-                <Button
-                  isDisabled={!isUserTalking}
-                  className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white"
-                  size="md"
-                  variant="shadow"
-                  aria-label="音声チャット"
-                >
-                  {isUserTalking ? "Listening" : "Voice chat"}
-                </Button>
-              </div>
-            )}
-          </CardFooter>
-        </Card>
-        
-        <Card className="w-[300px] max-h-[700px]">
-          <CardBody>
-            <div ref={chatContainerRef} className="flex flex-col gap-2 h-[600px] overflow-y-auto">
-              {chatHistory.map((message, index) => (
-                <div
-                  key={index}
-                  className={`p-2 rounded-lg ${
-                    message.role === 'user' 
-                      ? 'bg-indigo-100 dark:bg-indigo-900 ml-auto' 
-                      : 'bg-gray-100 dark:bg-gray-800 mr-auto'
-                  } max-w-[80%]`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                  </p>
-                </div>
-              ))}
+          <div className="py-4">
+            <div className="flex justify-center">
+              <Button
+                className="h-[160px] px-8 bg-[#620427] text-white text-4xl font-zen-maru-gothic rounded-[20px] border-[3px] border-[#996B7D] shadow-[3px_3px_0px_rgba(0,0,0,0.25)] hover:bg-opacity-90"
+                size="lg"
+                variant="solid"
+                onPress={handleEndAndReturn}
+                isDisabled={!avatar.current}
+                aria-label="会話をやめる"
+              >
+                会話をやめる
+              </Button>
             </div>
-          </CardBody>
+          </div>
         </Card>
       </div>
-      <p className="font-mono text-right">
-        <span className="font-bold">Console:</span>
-        <br />
-        {debug}
-      </p>
     </div>
   );
 }

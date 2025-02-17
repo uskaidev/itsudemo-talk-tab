@@ -1,50 +1,75 @@
-import React from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Input, Spinner, Tooltip, Button } from "@nextui-org/react";
+import { PaperPlaneRight } from "@phosphor-icons/react";
 
 interface InteractiveAvatarTextInputProps {
-  disabled?: boolean;
+  label: string;
+  placeholder: string;
   input: string;
-  label?: string;
-  loading?: boolean;
-  placeholder?: string;
-  setInput: (value: string) => void;
   onSubmit: () => void;
+  setInput: (value: string) => void;
+  endContent?: React.ReactNode;
+  disabled?: boolean;
+  loading?: boolean;
 }
 
 export default function InteractiveAvatarTextInput({
-  disabled = false,
-  input,
   label,
-  loading = false,
   placeholder,
-  setInput,
+  input,
   onSubmit,
+  setInput,
+  endContent,
+  disabled = false,
+  loading = false,
 }: InteractiveAvatarTextInputProps) {
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      onSubmit();
+  function handleSubmit() {
+    if (input.trim() === "") {
+      return;
     }
-  };
+    onSubmit();
+    setInput("");
+  }
 
   return (
-    <div className="w-full flex gap-2">
-      <Input
-        disabled={disabled || loading}
-        label={label}
-        placeholder={placeholder}
-        value={input}
-        onKeyDown={handleKeyDown}
-        onValueChange={setInput}
-      />
-      <Button
-        isDisabled={disabled || loading || !input}
-        isLoading={loading}
-        className="bg-gradient-to-tr from-indigo-500 to-indigo-300 text-white"
-        onPress={onSubmit}
-      >
-        Send
-      </Button>
-    </div>
+    <Input
+      endContent={
+        <div className="flex flex-row items-center h-full">
+          {endContent}
+          <Tooltip content="Send message">
+            {loading ? (
+              <Spinner
+                className="text-indigo-300 hover:text-indigo-200"
+                size="sm"
+                color="default"
+              />
+            ) : (
+              <Button
+                isIconOnly
+                variant="light"
+                onPress={handleSubmit}
+                aria-label="メッセージを送信"
+                isDisabled={disabled}
+              >
+                <PaperPlaneRight
+                  className="text-indigo-300 hover:text-indigo-200"
+                  size={24}
+                />
+              </Button>
+            )}
+          </Tooltip>
+        </div>
+      }
+      label={label}
+      placeholder={placeholder}
+      size="sm"
+      value={input}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          handleSubmit();
+        }
+      }}
+      onValueChange={setInput}
+      isDisabled={disabled}
+    />
   );
 }
