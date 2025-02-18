@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { VideoCard } from "@/components/video-card"
 import { VideoModal } from "@/components/video-modal"
-import { usePageView } from "@/hooks/usePageView"
+import { PageViewTracker } from "@/components/page-view-tracker"
+import { Suspense } from "react"
 
 const exerciseVideos = [
   {
@@ -30,11 +31,13 @@ const exerciseVideos = [
 ]
 
 export default function ExercisePage() {
-  usePageView()
   const [selectedVideo, setSelectedVideo] = useState<(typeof exerciseVideos)[0] | null>(null)
 
   return (
     <div className="h-full w-full p-8 flex flex-col scroll-container">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <h1 className="text-3xl font-bold mb-2 font-zen-maru-gothic text-center">運動する</h1>
       <h2 className="text-lg mb-6 font-zen-maru-gothic text-center">画像をタッチすると動画が自動的に再生されます。</h2>
 

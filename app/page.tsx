@@ -3,12 +3,15 @@
 import Image from "next/image"
 import { MainButton } from "@/components/main-button"
 import { TodayVideoButton } from "@/components/today-video-button"
-import { usePageView } from "@/hooks/usePageView"
+import { PageViewTracker } from "@/components/page-view-tracker"
+import { Suspense } from "react"
 
 export default function Home() {
-  usePageView()
   return (
     <div className="min-h-screen bg-[#FAFFD4] flex items-center justify-center">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <div className="w-full max-w-[1080px] flex flex-col items-center justify-center gap-12 p-8">
         {/* ヘッダー部分 */}
         <div className="text-center">

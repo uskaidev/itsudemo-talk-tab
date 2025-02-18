@@ -5,7 +5,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Clock } from "lucide-react"
-import { usePageView } from "@/hooks/usePageView"
+import { PageViewTracker } from "@/components/page-view-tracker"
+import { Suspense } from "react"
 
 const activities = [
   {
@@ -39,9 +40,11 @@ const activities = [
 ]
 
 export default function OutdoorActivities() {
-  usePageView()
   return (
     <div className="h-full w-full p-8 flex flex-col">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <h1 className="text-4xl font-bold mb-6 font-zen-maru-gothic text-center">外出する</h1>
 
       <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
