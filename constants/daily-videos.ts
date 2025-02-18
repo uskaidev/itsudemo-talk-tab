@@ -41,5 +41,69 @@ export const DAILY_VIDEOS: Record<string, {
   "02-23": {
     videoId: "bbFC-YQ8xzk",
     title: "2月23日の動画"
+  },
+  "02-24": {
+    videoId: "id2YktVGm5w",
+    title: "2月24日の動画"
+  },
+  "02-25": {
+    videoId: "5PiRF2ouWPk",
+    title: "2月25日の動画"
+  },
+  "02-26": {
+    videoId: "bJMBYM8AbH0",
+    title: "2月26日の動画"
+  },
+  "02-27": {
+    videoId: "TgXBMkyDy9c",
+    title: "2月27日の動画"
+  },
+  "02-28": {
+    videoId: "EO95kraggP8",
+    title: "2月28日の動画"
+  },
+  "02-29": {
+    videoId: "zspayaNdIPg",
+    title: "2月29日の動画"
+  },
+  "03-01": {
+    videoId: "6hAq0ou51SY",
+    title: "3月1日の動画"
+  },
+  "03-02": {
+    videoId: "f4viq6k-Fvs",
+    title: "3月2日の動画"
+  },
+  "03-03": {
+    videoId: "CffjdFHEVSk",
+    title: "3月3日の動画"
+  },
+  "03-04": {
+    videoId: "qdMo0636ErM",
+    title: "3月4日の動画"
+  },
+  "03-05": {
+    videoId: "FJO5juAEnOU",
+    title: "3月5日の動画"
+  },
+  "03-06": {
+    videoId: "K0v5dNi4IiA",
+    title: "3月6日の動画"
+  },
+  "03-07": {
+    videoId: "7uabbq2X-8I",
+    title: "3月7日の動画"
+  },
+  "03-08": {
+    videoId: "dZm6ISp5ln4",
+    title: "3月8日の動画"
+  },
+  "03-09": {
+    videoId: "DcK3SN3_r9Y",
+    title: "3月9日の動画"
+  },
+  "03-10": {
+    videoId: "3ujvhf4zpqo",
+    title: "3月10日の動画"
   }
 };

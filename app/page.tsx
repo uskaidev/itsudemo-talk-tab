@@ -1,8 +1,12 @@
+'use client'
+
 import Image from "next/image"
 import { MainButton } from "@/components/main-button"
 import { TodayVideoButton } from "@/components/today-video-button"
+import { usePageView } from "@/hooks/usePageView"
 
 export default function Home() {
+  usePageView()
   return (
     <div className="min-h-screen bg-[#FAFFD4] flex items-center justify-center">
       <div className="w-full max-w-[1080px] flex flex-col items-center justify-center gap-12 p-8">

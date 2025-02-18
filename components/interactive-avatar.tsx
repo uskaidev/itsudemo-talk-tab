@@ -424,6 +424,26 @@ export default function InteractiveAvatar({
             <div className="w-full bg-black rounded-lg overflow-hidden">
               <div className="relative w-full pt-[56.25%]">
                 <div className="absolute top-0 left-0 w-full h-full">
+                  {isUserTalking && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <Chip
+                        variant="flat"
+                        classNames={{
+                          base: "bg-green-500/80 animate-pulse",
+                          content: "text-white font-zen-maru-gothic"
+                        }}
+                        startContent={
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" x2="12" y1="19" y2="22"/>
+                          </svg>
+                        }
+                      >
+                        音声認識中...
+                      </Chip>
+                    </div>
+                  )}
                   {stream ? (
                     <video
                       ref={mediaStream}

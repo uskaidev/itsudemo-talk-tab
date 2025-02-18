@@ -1,6 +1,10 @@
+'use client'
+
 import Link from 'next/link'
+import { usePageView } from '@/hooks/usePageView'
 
 export default function OutsideDetailsPage() {
+  usePageView()
   return (
     <div className="w-full h-[800px] bg-[#FAFFD4] p-4 flex flex-col items-center justify-center overflow-hidden">
       <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">

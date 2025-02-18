@@ -49,7 +49,7 @@ export const API_CONFIG = {
 // Avatar configurations
 export const AVATAR_CONFIG = {
   QUALITY: "low" as const,
-  VOICE_RATE: 1.5,
-  VOICE_EMOTION: "excited" as const,
+  VOICE_RATE: 0.85,
+  VOICE_EMOTION: "soothing" as const,
   IDLE_TIMEOUT: false
 };

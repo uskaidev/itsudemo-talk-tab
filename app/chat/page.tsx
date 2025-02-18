@@ -1,8 +1,10 @@
 "use client";
 
 import ChatButton from "@/components/chat-button";
+import { usePageView } from "@/hooks/usePageView";
 
 export default function ChatPage() {
+  usePageView();
   return (
     <div className="h-full w-full p-6 flex flex-col items-center">
       <h1 className="text-4xl font-bold mb-12 font-zen-maru-gothic text-center">アシスタントと話す</h1>

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { VideoCard } from "@/components/video-card"
 import { VideoModal } from "@/components/video-modal"
+import { usePageView } from "@/hooks/usePageView"
 
 const exerciseVideos = [
   {
@@ -29,6 +30,7 @@ const exerciseVideos = [
 ]
 
 export default function ExercisePage() {
+  usePageView()
   const [selectedVideo, setSelectedVideo] = useState<(typeof exerciseVideos)[0] | null>(null)
 
   return (
