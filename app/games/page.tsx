@@ -38,7 +38,7 @@ export default function GamesPage() {
       <Suspense>
         <PageViewTracker />
       </Suspense>
-      <h1 className="text-3xl font-bold mb-2 font-zen-maru-gothic text-center">ゲーム/脳トレをする</h1>
+      <h1 className="text-3xl font-bold mb-2 font-zen-maru-gothic text-center">脳トレをする</h1>
       <h2 className="text-lg mb-6 font-zen-maru-gothic text-center">画像をタッチすると動画が自動的に再生されます。</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mx-auto">

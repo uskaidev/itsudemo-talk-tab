@@ -51,10 +51,10 @@ export function VideoModal({ isOpen, onClose, videoTitle, videoSrc }: VideoModal
         <div className="mt-2 flex flex-col">
           <DialogTitle className="text-xl font-bold mb-2 line-clamp-1">{videoTitle}</DialogTitle>
           <button
-            className="w-full bg-[#276204] hover:bg-[#1E4A03] text-white py-3 rounded-xl text-lg font-bold transition-colors"
+            className="w-full bg-[#276204] hover:bg-[#1E4A03] text-white py-5 rounded-xl text-2xl font-bold transition-colors"
             onClick={onClose}
           >
-            動画を閉じる
+            動画を終了する
           </button>
         </div>
       </DialogContent>

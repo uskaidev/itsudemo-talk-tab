@@ -31,28 +31,28 @@ export function Sidebar() {
         <div className="space-y-6">
           <SidebarButton
             href="/chat"
-            icon="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_talk-i8q3k6kkLhrKZCcpJV30aEmG92LEEF.svg"
+            icon="/icons/icon_talk_dark.svg"
             text="アシスタントと話す"
             isActive={pathname === "/chat"}
             isLarge={true}
           />
           <SidebarButton
             href="/exercise"
-            icon="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_sport-hPGCTl8opRXeHLu5FLJ2SexForfzoO.svg"
+            icon="/icons/icon_sport_dark.svg"
             text="運動する"
             isActive={pathname === "/exercise"}
             isLarge={false}
           />
           <SidebarButton
             href="/games"
-            icon="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_game-OddmG7i1RFI7BRKkCdKX7UjWjCASUP.svg"
-            text="ゲーム/脳トレをする"
+            icon="/icons/icon_game_dark.svg"
+            text="脳トレをする"
             isActive={pathname === "/games"}
             isLarge={false}
           />
           <SidebarButton
             href="/outside"
-            icon="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_outside-RlaVSMbEqRPd0jKaUF8Qw1JcXDk3dl.svg"
+            icon="/icons/icon_outside_dark.svg"
             text="外出する"
             isActive={pathname === "/outside"}
             isLarge={false}

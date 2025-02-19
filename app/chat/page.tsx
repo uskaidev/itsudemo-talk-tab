@@ -10,7 +10,8 @@ export default function ChatPage() {
       <Suspense>
         <PageViewTracker />
       </Suspense>
-      <h1 className="text-4xl font-bold mb-12 font-zen-maru-gothic text-center">アシスタントと話す</h1>
+      <h1 className="text-4xl font-bold mb-4 font-zen-maru-gothic text-center">アシスタントと話す</h1>
+      <h2 className="text-lg mb-12 text-center">「会話をはじめる」ボタンをタッチして、アシスタントが表示されたらご自由に話かけてください。</h2>
       <ChatButton
         knowledgeId="97ac3c7dcb5742cdbe572ab9d8379342"
         avatarId="Wayne_20240711"
