@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { VideoCard } from "@/components/video-card"
 import { VideoModal } from "@/components/video-modal"
+import { PageViewTracker } from "@/components/page-view-tracker"
+import { Suspense } from "react"
 
 const games = [
   {
@@ -33,6 +35,9 @@ export default function GamesPage() {
 
   return (
     <div className="h-full w-full p-8 flex flex-col scroll-container">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <h1 className="text-3xl font-bold mb-2 font-zen-maru-gothic text-center">ゲーム/脳トレをする</h1>
       <h2 className="text-lg mb-6 font-zen-maru-gothic text-center">画像をタッチすると動画が自動的に再生されます。</h2>
 

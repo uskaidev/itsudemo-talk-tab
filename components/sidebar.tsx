@@ -72,8 +72,17 @@ interface SidebarButtonProps {
 }
 
 function SidebarButton({ href, icon, text, isActive, isLarge }: SidebarButtonProps) {
+  const pathname = usePathname()
+  
+  const handleClick = (e: React.MouseEvent) => {
+    if (pathname === href) {
+      e.preventDefault()
+      window.location.reload()
+    }
+  }
+
   return (
-    <Link href={href} className="block w-full">
+    <Link href={href} className="block w-full" onClick={handleClick}>
       <div
         className={`
         relative w-full
@@ -104,4 +113,3 @@ function SidebarButton({ href, icon, text, isActive, isLarge }: SidebarButtonPro
     </Link>
   )
 }
-

@@ -1,8 +1,15 @@
+'use client'
+
 import Link from 'next/link'
+import { PageViewTracker } from '@/components/page-view-tracker'
+import { Suspense } from 'react'
 
 export default function OutsideDetailsPage() {
   return (
     <div className="w-full h-[800px] bg-[#FAFFD4] p-4 flex flex-col items-center justify-center overflow-hidden">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <div className="max-w-2xl w-full bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
         <h1 className="text-3xl font-bold mb-6 text-center font-zen-maru-gothic">外出支援サービス</h1>
         <p className="text-xl text-center font-zen-maru-gothic">

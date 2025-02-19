@@ -1,34 +1,38 @@
+'use client'
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Clock } from "lucide-react"
+import { PageViewTracker } from "@/components/page-view-tracker"
+import { Suspense } from "react"
 
 const activities = [
   {
     id: 1,
-    title: "日常のお買い物サポート",
+    title: "日常のお買い物",
     duration: "1-2時間程度",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-sC3Vrru9iowWykn1SvNVidwFjxllwR.png",
     category: "日常支援",
   },
   {
     id: 2,
-    title: "公園でのお散歩サポート",
+    title: "公園でのお散歩",
     duration: "30分-1時間程度",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-FIgRAcu2OheYeLlXL5XDPtN0RNoTNf.png",
     category: "日常支援",
   },
   {
     id: 3,
-    title: "美術館見学ツアー",
+    title: "美術館見学",
     duration: "2-3時間程度",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-1tcvFAceTfghzxosp5dwFyCGv8Ilp0.png",
     category: "文化活動",
   },
   {
     id: 4,
-    title: "季節の観光スポット巡り",
+    title: "観光スポット巡り",
     duration: "3-4時間程度",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-tcM14HUPi99Cl5JLqqK77nbaJfI2jk.png",
     category: "文化活動",
@@ -38,6 +42,9 @@ const activities = [
 export default function OutdoorActivities() {
   return (
     <div className="h-full w-full p-8 flex flex-col">
+      <Suspense>
+        <PageViewTracker />
+      </Suspense>
       <h1 className="text-4xl font-bold mb-6 font-zen-maru-gothic text-center">外出する</h1>
 
       <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
