@@ -5,6 +5,7 @@ import { ClientSidebar } from "@/components/client-sidebar"
 import type { Metadata } from 'next'
 import StreamingAvatarScript from "@/components/streaming-avatar-script"
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { FullScreenHandler } from '@/components/full-screen-handler'
 
 export const metadata: Metadata = {
   title: 'いつでもトーク',
@@ -20,7 +21,15 @@ const zenMaruGothic = Zen_Maru_Gothic({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="theme-color" content="#FFFFFF" />
+      </head>
       <body className={`${zenMaruGothic.variable} font-sans font-zen-maru-gothic`}>
+        <FullScreenHandler />
         <StreamingAvatarScript />
         <div className="flex min-h-screen">
           <ClientSidebar />
