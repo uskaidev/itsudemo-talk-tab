@@ -18,7 +18,7 @@ export default function ChatButton({ knowledgeId, avatarId, language }: ChatButt
       <div className="relative">
         <div className={`transition-all duration-500 ${showChat ? 'opacity-0 absolute inset-0 pointer-events-none' : 'opacity-100'}`}>
           <img 
-            src="/preview_target.webp" 
+            src="/avatars/avater2.png" 
             alt="アシスタント" 
             className="w-full h-auto rounded-lg scale-110 mb-8"
           />
