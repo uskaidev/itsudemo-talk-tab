@@ -15,7 +15,7 @@ export interface Language {
 // Avatar configurations
 export const AVATARS: Avatar[] = [
   {
-    id: "Wayne_20240711",
+    id: "f0c626a25c6f4f87841630b9acc66482",
     name: "Wayne",
     voiceId: "1bd001e7e89244f5b01e5f36c3c7b926",
     defaultLanguage: "ja"
@@ -49,7 +49,7 @@ export const API_CONFIG = {
 // Avatar configurations
 export const AVATAR_CONFIG = {
   QUALITY: "low" as const,
-  VOICE_RATE: 0.85,
+  VOICE_RATE: 0.5,
   VOICE_EMOTION: "soothing" as const,
   IDLE_TIMEOUT: false
 };

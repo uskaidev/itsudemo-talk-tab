@@ -34,7 +34,7 @@ interface InteractiveAvatarProps {
 
 export default function InteractiveAvatar({
   initialKnowledgeId = "97ac3c7dcb5742cdbe572ab9d8379342",
-  initialAvatarId = "Wayne_20240711",
+  initialAvatarId = "f0c626a25c6f4f87841630b9acc66482",
   initialLanguage = "ja",
   setShowChat,
 }: InteractiveAvatarProps) {
@@ -181,12 +181,18 @@ export default function InteractiveAvatar({
     
     try {
       setDebug("Starting voice chat");
-      await avatarInstance.startVoiceChat({
+      const voiceChatConfig = {
         useSilencePrompt: false,
         language: language,
         continuous: true,
-        interimResults: true
-      });
+        interimResults: true,
+        voice: {
+          rate: AVATAR_CONFIG.VOICE_RATE,
+          emotion: VoiceEmotion.SOOTHING,
+        }
+      };
+      setDebug(`Starting voice chat with config: ${JSON.stringify(voiceChatConfig, null, 2)}`);
+      await avatarInstance.startVoiceChat(voiceChatConfig);
       setDebug("Voice chat started successfully");
     } catch (error: any) {
       console.error("Error starting voice chat:", error);
@@ -211,11 +217,18 @@ export default function InteractiveAvatar({
         }
       ]);
       
-      await avatar.current.speak({
+      const speakConfig = {
         text: text,
         taskType: TaskType.REPEAT,
         taskMode: TaskMode.SYNC,
-      });
+        voice: {
+          rate: AVATAR_CONFIG.VOICE_RATE,
+          emotion: VoiceEmotion.SOOTHING,
+        }
+      };
+      
+      setDebug(`Speaking with config: ${JSON.stringify(speakConfig, null, 2)}`);
+      await avatar.current.speak(speakConfig);
       
       setText("");
     } catch (error: any) {
@@ -325,17 +338,20 @@ export default function InteractiveAvatar({
         }
 
         setDebug("Creating avatar...");
-        await avatarInstance.createStartAvatar({
+        const avatarConfig = {
           quality: AvatarQuality.Low,
           avatarName: avatarId,
           knowledgeId: knowledgeId,
           voice: {
             rate: AVATAR_CONFIG.VOICE_RATE,
-            emotion: VoiceEmotion.EXCITED,
+            emotion: VoiceEmotion.SOOTHING,
           },
           language: language,
           disableIdleTimeout: AVATAR_CONFIG.IDLE_TIMEOUT,
-        });
+        };
+        
+        setDebug(`Creating avatar with config: ${JSON.stringify(avatarConfig, null, 2)}`);
+        await avatarInstance.createStartAvatar(avatarConfig);
 
         return avatarInstance;
       } catch (error) {
