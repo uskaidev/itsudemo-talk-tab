@@ -1,29 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useFullScreen } from '@/hooks/useFullScreen';
+import { FullScreenGuide } from './full-screen-guide';
 
 export const FullScreenHandler = () => {
-  const { enterFullScreen } = useFullScreen();
+  // Check if it's running on supported browsers
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+  const isDesktop = typeof navigator !== 'undefined' && !/Android|iPhone|iPad/i.test(navigator.userAgent);
+  const isChrome = typeof navigator !== 'undefined' && /Chrome/i.test(navigator.userAgent);
+  const isEdge = typeof navigator !== 'undefined' && /Edg/i.test(navigator.userAgent);
 
-  useEffect(() => {
-    // Check if it's running on supported browsers
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isDesktop = !/Android|iPhone|iPad/i.test(navigator.userAgent);
-    const isChrome = /Chrome/i.test(navigator.userAgent);
-    const isEdge = /Edg/i.test(navigator.userAgent);
+  if ((isAndroid && isChrome) || (isDesktop && (isChrome || isEdge))) {
+    return <FullScreenGuide />;
+  }
 
-    if ((isAndroid && isChrome) || (isDesktop && (isChrome || isEdge))) {
-      // Attempt to enter full-screen mode after a short delay
-      // This delay helps ensure the browser is ready to handle the full-screen request
-      const timer = setTimeout(() => {
-        enterFullScreen();
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [enterFullScreen]);
-
-  // This component doesn't render anything
   return null;
 };

@@ -17,7 +17,7 @@ export function MainButton() {
         <div className="w-[35%] flex justify-center items-center">
           <div className="relative w-1/2 aspect-square">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/icon_talk-i8q3k6kkLhrKZCcpJV30aEmG92LEEF.svg"
+              src="/icons/icon_talk_dark.svg"
               alt="アシスタントアイコン"
               fill
               className="object-contain"
@@ -31,4 +31,3 @@ export function MainButton() {
     </Link>
   )
 }
-

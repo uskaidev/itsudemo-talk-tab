@@ -9,7 +9,7 @@ import { FullScreenHandler } from '@/components/full-screen-handler'
 
 export const metadata: Metadata = {
   title: 'いつでもトーク',
-  description: 'みなさんとお話したり、自由にアクティビティを行うサポートをします',
+  description: 'みなさんとお話したり、運動や脳トレ、外出を楽しむサポートをします',
 }
 
 const zenMaruGothic = Zen_Maru_Gothic({

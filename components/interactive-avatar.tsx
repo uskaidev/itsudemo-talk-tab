@@ -30,6 +30,7 @@ interface InteractiveAvatarProps {
   initialAvatarId?: string;
   initialLanguage?: string;
   setShowChat: (show: boolean) => void;
+  onLoadingStateChange?: (loading: boolean) => void;
 }
 
 export default function InteractiveAvatar({
@@ -37,6 +38,7 @@ export default function InteractiveAvatar({
   initialAvatarId = "Wayne_20240711",
   initialLanguage = "ja",
   setShowChat,
+  onLoadingStateChange,
 }: InteractiveAvatarProps) {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [isLoadingRepeat, setIsLoadingRepeat] = useState(false);
@@ -268,7 +270,6 @@ export default function InteractiveAvatar({
     setShowChat(false);
   }
 
-
   useEffect(() => {
     if (stream && mediaStream.current) {
       mediaStream.current.srcObject = stream;
@@ -403,9 +404,11 @@ export default function InteractiveAvatar({
     };
 
     setIsLoadingSession(true);
+    onLoadingStateChange?.(true);
     init().finally(() => {
       if (mounted) {
         setIsLoadingSession(false);
+        onLoadingStateChange?.(false);
       }
     });
 
@@ -414,7 +417,7 @@ export default function InteractiveAvatar({
       cleanup?.();
       endSession();
     };
-  }, [setupEventHandlers, avatarId, knowledgeId, language, startVoiceChat]);
+  }, [setupEventHandlers, avatarId, knowledgeId, language, startVoiceChat, onLoadingStateChange]);
 
   return (
     <div className="w-full relative">
@@ -457,7 +460,7 @@ export default function InteractiveAvatar({
                     <div className="w-full h-full flex flex-col justify-center items-center gap-6 bg-black/80">
                       <Spinner color="default" size="lg" />
                       <div className="text-xl font-zen-maru-gothic text-white">
-                        準備中です
+                        お話をする準備をしています
                       </div>
                       <div className="w-64 h-4 bg-gray-100/20 rounded-full overflow-hidden">
                         <div 
@@ -467,26 +470,9 @@ export default function InteractiveAvatar({
                     </div>
                   )}
                 </div>
-                
               </div>
-
             </div>
           </CardBody>
-          <Divider />
-          <div className="py-4">
-            <div className="flex justify-center">
-              <Button
-                className="h-[160px] px-8 bg-[#620427] text-white text-4xl font-zen-maru-gothic rounded-[20px] border-[3px] border-[#996B7D] shadow-[3px_3px_0px_rgba(0,0,0,0.25)] hover:bg-opacity-90"
-                size="lg"
-                variant="solid"
-                onPress={handleEndAndReturn}
-                isDisabled={!avatar.current}
-                aria-label="会話をやめる"
-              >
-                会話をやめる
-              </Button>
-            </div>
-          </div>
         </Card>
       </div>
     </div>
