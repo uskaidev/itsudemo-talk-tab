@@ -35,7 +35,7 @@ interface InteractiveAvatarProps {
 
 export default function InteractiveAvatar({
   initialKnowledgeId = "97ac3c7dcb5742cdbe572ab9d8379342",
-  initialAvatarId = "Wayne_20240711",
+  initialAvatarId = "June_HR_public",
   initialLanguage = "ja",
   setShowChat,
   onLoadingStateChange,

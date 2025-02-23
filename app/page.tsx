@@ -32,7 +32,7 @@ export default function Home() {
           <p className="text-3xl font-medium leading-relaxed font-zen-maru-gothic">
             みなさんとお話したり、
             <br />
-            運動や脳トレ、外出を楽しむサポートをします
+            運動や脳トレ、外出を楽しむサポートをいたします
           </p>
         </div>
 
