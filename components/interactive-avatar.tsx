@@ -328,7 +328,7 @@ export default function InteractiveAvatar({
         setDebug("Creating avatar...");
         await avatarInstance.createStartAvatar({
           quality: AvatarQuality.Low,
-          avatarName: avatarId,
+          avatarName: avatarId, // Reverted back to avatarName
           knowledgeId: knowledgeId,
           voice: {
             rate: AVATAR_CONFIG.VOICE_RATE,
@@ -339,7 +339,11 @@ export default function InteractiveAvatar({
         });
 
         return avatarInstance;
-      } catch (error) {
+      } catch (error: any) {
+        console.error("Error creating avatar:", error);
+        if (error.response) {
+          console.error("Error response:", error.response);
+        }
         cleanup?.();
         throw error;
       }
