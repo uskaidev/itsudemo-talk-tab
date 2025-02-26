@@ -14,7 +14,7 @@ export default function ChatPage() {
       <h2 className="text-lg mb-12 text-center">「会話をはじめる」ボタンをタッチして、アシスタントが表示されたらご自由に話かけてください。</h2>
       <ChatButton
         knowledgeId="97ac3c7dcb5742cdbe572ab9d8379342"
-        avatarId="June_HR_public"
+        avatarId="7438b2e84aed4f9fbf64453080e58651"
         language="ja"
       />
     </div>

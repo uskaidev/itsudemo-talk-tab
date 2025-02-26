@@ -15,7 +15,7 @@ export interface Language {
 // Avatar configurations
 export const AVATARS: Avatar[] = [
   {
-    id: "June_HR_public",
+    id: "7438b2e84aed4f9fbf64453080e58651",
     name: "June",
     voiceId: "1bd001e7e89244f5b01e5f36c3c7b926",
     defaultLanguage: "ja"
