@@ -25,7 +25,7 @@ export default function ChatButton({ knowledgeId, avatarId, language }: ChatButt
         <div className="mb-8">
           <div className="relative">
             <img 
-              src="/preview_target.webp" 
+              src="/natsumi_preview.webp" 
               alt="アシスタント" 
               className={`w-full h-auto rounded-lg scale-110 transition-opacity duration-500 ${showChat ? 'opacity-0' : 'opacity-100'}`}
             />

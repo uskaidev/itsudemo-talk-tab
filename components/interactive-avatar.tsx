@@ -35,7 +35,7 @@ interface InteractiveAvatarProps {
 
 export default function InteractiveAvatar({
   initialKnowledgeId = "97ac3c7dcb5742cdbe572ab9d8379342",
-  initialAvatarId = "June_HR_public",
+  initialAvatarId = "7438b2e84aed4f9fbf64453080e58651",
   initialLanguage = "ja",
   setShowChat,
   onLoadingStateChange,
@@ -328,7 +328,7 @@ export default function InteractiveAvatar({
         setDebug("Creating avatar...");
         await avatarInstance.createStartAvatar({
           quality: AvatarQuality.Low,
-          avatarName: avatarId,
+          avatarName: avatarId, // Reverted back to avatarName
           knowledgeId: knowledgeId,
           voice: {
             rate: AVATAR_CONFIG.VOICE_RATE,
@@ -339,7 +339,11 @@ export default function InteractiveAvatar({
         });
 
         return avatarInstance;
-      } catch (error) {
+      } catch (error: any) {
+        console.error("Error creating avatar:", error);
+        if (error.response) {
+          console.error("Error response:", error.response);
+        }
         cleanup?.();
         throw error;
       }

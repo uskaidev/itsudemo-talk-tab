@@ -24,6 +24,10 @@ export async function POST() {
         status: res.status,
         statusText: res.statusText,
         body: errorText,
+        url: `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CREATE_TOKEN}`,
+        headers: {
+          "x-api-key": "***" // Masked for security
+        }
       });
       throw new Error(`HeyGen API error: ${res.status} ${res.statusText}`);
     }
