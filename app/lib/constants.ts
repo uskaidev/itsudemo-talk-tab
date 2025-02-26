@@ -16,8 +16,8 @@ export interface Language {
 export const AVATARS: Avatar[] = [
   {
     id: "7438b2e84aed4f9fbf64453080e58651",
-    name: "June",
-    voiceId: "1bd001e7e89244f5b01e5f36c3c7b926",
+    name: "natsumi",
+    voiceId: "4ca81ea8f1654aa18cc15802d50fa15e",
     defaultLanguage: "ja"
   }
 ];
@@ -27,12 +27,12 @@ export const STT_LANGUAGE_LIST: Language[] = [
   {
     code: "ja",
     name: "Japanese",
-    voiceId: "1bd001e7e89244f5b01e5f36c3c7b926"
+    voiceId: "4ca81ea8f1654aa18cc15802d50fa15e"
   },
   {
     code: "en",
     name: "English",
-    voiceId: "1bd001e7e89244f5b01e5f36c3c7b926"
+    voiceId: "4ca81ea8f1654aa18cc15802d50fa15e"
   }
 ];
 
