@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "node start-https.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -30,6 +31,7 @@
     "@types/node": "^20.11.17",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+    "@types/webrtc": "^0.0.44",
     "@uiw/codemirror-extensions-langs": "^4.23.8",
     "@uiw/react-codemirror": "^4.23.8",
     "ahooks": "^3.8.4",
