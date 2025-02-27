@@ -500,7 +500,7 @@ export default function OpenAIRealtimeAvatar({
                   
                   {/* 音声認識インジケーター */}
                   {conversationState === 'user_talking' && (
-                    <div className="absolute top-4 right-4 z-10">
+                    <div className="absolute top-4 right-4 z-30">
                       <Chip
                         variant="flat"
                         classNames={{
