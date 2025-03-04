@@ -1,0 +1,33 @@
+! [chat-sdk-implementation2] Update avatar configuration to use June_HR_public
+ ! [feature/chat-sdk-implementation] fix: useSearchParamsをSuspenseでラップして静的生成エラーを解消
+  * [feature/heygen-avatar-loading-speed] Improve Heygen avatar loading speed by implementing token preloading
+   ! [feature/openai-realtime-api-test] 音声インジケータの表示を更新
+    ! [main] より丁寧な表現に修正（します → いたします）
+     ! [update-avatar-id] 変更を追加しました
+      ! [update-avatar-june] Update avatar to June_HR_public
+       ! [origin/chat-sdk-implementation2] feat: アバター画像を更新 - public/avatarsディレクトリを作成し、新しいアバター画像を配置 - ChatButtonコンポーネントのイメージパスを更新
+        ! [origin/feature/chat-sdk-implementation] fix: useSearchParamsをSuspenseでラップして静的生成エラーを解消
+         ! [origin/feature/openai-realtime-api-test] 音声インジケータの表示を更新
+          ! [origin/main] Merge pull request #2 from uskaidev/update-avatar-id
+           ! [origin/update-avatar-id] 変更を追加しました
+------------
+  *          [feature/heygen-avatar-loading-speed] Improve Heygen avatar loading speed by implementing token preloading
+  *+     +   [feature/openai-realtime-api-test] 音声インジケータの表示を更新
+  *+     +   [feature/openai-realtime-api-test^] アバター動画ファイルとドキュメントを追加
+  *+     +   [feature/openai-realtime-api-test~2] Improve avatar state transitions: disable debug mode, set explicit idle state, adjust event detection conditions, enhance audio event listeners
+  *+     +   [feature/openai-realtime-api-test~3] Implement OpenAI realtime API functionality with chat button integration
+          -  [origin/main] Merge pull request #2 from uskaidev/update-avatar-id
+  *+ +   +++ [update-avatar-id] 変更を追加しました
+  *+ +   +++ [update-avatar-id^] Update avatar name to natsumi and voice ID to 4ca81ea8f1654aa18cc15802d50fa15e
+  *+ +   +++ [update-avatar-id~2] Update avatar ID from June_HR_public to 7438b2e84aed4f9fbf64453080e58651
+  *+++   +++ [main] より丁寧な表現に修正（します → いたします）
+      +      [update-avatar-june] Update avatar to June_HR_public
+  *++++  +++ [main^] feat: update components and pages
+  *++++  +++ [main~2] fix: resolve hydration error in FullScreenGuide and move to top-right position
++            [chat-sdk-implementation2] Update avatar configuration to use June_HR_public
++      +     [origin/chat-sdk-implementation2] feat: アバター画像を更新 - public/avatarsディレクトリを作成し、新しいアバター画像を配置 - ChatButtonコンポーネントのイメージパスを更新
++      +     [origin/chat-sdk-implementation2^] Update interactive avatar component
++ *+++++ +++ [main~3] feat: フルスクリーン機能の追加
++ *+++++ +++ [main~4] チャット機能の実装とUIの改善
+- ------ --- [main~5] Merge feature/chat-sdk-implementation: Add PageViewTracker, StreamingAvatarScript, GoogleAnalytics, and update daily videos
+++*+++++++++ [feature/chat-sdk-implementation] fix: useSearchParamsをSuspenseでラップして静的生成エラーを解消

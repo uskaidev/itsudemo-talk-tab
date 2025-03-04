@@ -1,0 +1,21 @@
+  // コンポーネントマウント時にトークンをプリロード
+  useEffect(() => {
+    let isMounted = true;
+    
+    const preloadToken = async () => {
+      try {
+        const startTime = Date.now();
+        setLoadTimes(prev => ({ ...prev, tokenFetchStart: startTime }));
+        
+        const token = await fetchAccessToken();
+        
+        if (isMounted) {
+          const endTime = Date.now();
+          setLoadTimes(prev => ({ ...prev, tokenFetchEnd: endTime }));
+          
+          setPreloadedToken(token);
+          setDebug(`Token preloaded successfully in ${endTime - startTime}ms`);
+        }
+      } catch (error) {
+        console.error("Failed to preload token:", error);
+      }

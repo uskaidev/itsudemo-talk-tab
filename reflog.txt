@@ -1,0 +1,10 @@
+3e8cdb4 HEAD@{0}: commit: Improve Heygen avatar loading speed by implementing token preloading
+1a4dda3 HEAD@{1}: checkout: moving from feature/openai-realtime-api-test to feature/heygen-avatar-loading-speed
+1a4dda3 HEAD@{2}: commit: 音声インジケータの表示を更新
+08fddea HEAD@{3}: commit: アバター動画ファイルとドキュメントを追加
+80e1d6c HEAD@{4}: commit: Improve avatar state transitions: disable debug mode, set explicit idle state, adjust event detection conditions, enhance audio event listeners
+e7850d8 HEAD@{5}: commit: Implement OpenAI realtime API functionality with chat button integration
+ef4ce80 HEAD@{6}: checkout: moving from update-avatar-id to feature/openai-realtime-api-test
+ef4ce80 HEAD@{7}: commit: 変更を追加しました
+f25bd35 HEAD@{8}: commit: Update avatar name to natsumi and voice ID to 4ca81ea8f1654aa18cc15802d50fa15e
+7e448b0 HEAD@{9}: commit: Update avatar ID from June_HR_public to 7438b2e84aed4f9fbf64453080e58651
