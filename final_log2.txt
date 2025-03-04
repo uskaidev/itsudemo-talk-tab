@@ -1,0 +1,29 @@
+commit 22ac1092b04189be38d99d3420321eb903a52930
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Tue Mar 4 15:40:51 2025 +0900
+
+    Update .gitignore to exclude temporary files
+
+commit bb35b0a0d7587dc7782405cbe7d037057c04f232
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Tue Mar 4 15:40:18 2025 +0900
+
+    Remove temporary file
+
+commit 613c7dbba6177b76531ffc528fe419958c5abae1
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Sun Feb 23 20:36:40 2025 +0900
+
+    より丁寧な表現に修正（します → いたします）
+
+commit 2fbcea84bbcbf4f306162d97d66176df69516e5e
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Thu Feb 20 12:45:37 2025 +0900
+
+    feat: update components and pages
+
+commit 740c3c40193a758b97932bd2350fdc93e0f781b4
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Thu Feb 20 12:07:38 2025 +0900
+
+    fix: resolve hydration error in FullScreenGuide and move to top-right position

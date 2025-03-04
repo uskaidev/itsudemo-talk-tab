@@ -1,0 +1,11 @@
+export const AVATARS: Avatar[] = [
+  {
+    id: "7438b2e84aed4f9fbf64453080e58651",
+    name: "natsumi",
+    voiceId: "4ca81ea8f1654aa18cc15802d50fa15e",
+    defaultLanguage: "ja"
+  }
+];
+
+// Language configurations
+export const STT_LANGUAGE_LIST: Language[] = [

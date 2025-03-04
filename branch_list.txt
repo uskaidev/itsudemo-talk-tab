@@ -1,0 +1,8 @@
+  chat-sdk-implementation2
+  feature/chat-sdk-implementation
+  feature/heygen-avatar-loading-speed
+* feature/heygen-avatar-loading-speed-from-main
+  feature/openai-realtime-api-test
+  main
+  update-avatar-id
+  update-avatar-june

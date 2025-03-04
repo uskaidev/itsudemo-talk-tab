@@ -1,0 +1,5 @@
+commit 8dd51d40882ff28acd07fed448d25640400ced62
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Tue Mar 4 15:52:16 2025 +0900
+
+    Improve Heygen avatar loading speed by implementing token preloading

@@ -1,0 +1,7 @@
+  chat-sdk-implementation2            787c6a4 Update avatar configuration to use June_HR_public
+  feature/chat-sdk-implementation     16113d0 fix: useSearchParamsをSuspenseでラップして静的生成エラーを解消
+* feature/heygen-avatar-loading-speed 3e8cdb4 Improve Heygen avatar loading speed by implementing token preloading
+  feature/openai-realtime-api-test    1a4dda3 音声インジケータの表示を更新
+  main                                613c7db [behind 4] より丁寧な表現に修正（します → いたします）
+  update-avatar-id                    ef4ce80 変更を追加しました
+  update-avatar-june                  a2113af Update avatar to June_HR_public

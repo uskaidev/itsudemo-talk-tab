@@ -1,0 +1,21 @@
+22ac109 Update .gitignore to exclude temporary files
+bb35b0a Remove temporary file
+613c7db より丁寧な表現に修正（します → いたします）
+2fbcea8 feat: update components and pages
+740c3c4 fix: resolve hydration error in FullScreenGuide and move to top-right position
+ff219a6 feat: フルスクリーン機能の追加
+fd46a10 チャット機能の実装とUIの改善
+6ed2095 Merge feature/chat-sdk-implementation: Add PageViewTracker, StreamingAvatarScript, GoogleAnalytics, and update daily videos
+16113d0 fix: useSearchParamsをSuspenseでラップして静的生成エラーを解消
+fe06ba5 wip: Update project files
+97f2435 feat: add today video feature and update pages
+0694400 Add TodayVideoButton to main page
+89fb76f Restore video modal component
+8bac764 Restore today's video feature
+8ba5da7 feat: Add sidebar component and interactive avatar features
+a5a913a feat: add interactive avatar and chat functionality
+e5bcf5c feat: Migrate chat from HTML embed to SDK implementation
+973bdcc feat: add today video feature and update pages
+2b8b3e9 fix: ビルドエラーを修正 - lucide-reactパッケージの追加とButtonコンポーネントの修正
+dc10d8e fix: DialogTitleの追加とREADMEの作成
+9324868 Reset repository

@@ -1,0 +1,11 @@
+  // トークンのプリロードを実装
+  const [preloadedToken, setPreloadedToken] = useState<string | null>(null);
+  
+  // パフォーマンス測定用の状態
+  const [loadTimes, setLoadTimes] = useState<{
+    tokenFetchStart?: number;
+    tokenFetchEnd?: number;
+    avatarInitStart?: number;
+    avatarInitEnd?: number;
+  }>({});
+

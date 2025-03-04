@@ -1,0 +1,5 @@
+commit 613c7dbba6177b76531ffc528fe419958c5abae1
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Sun Feb 23 20:36:40 2025 +0900
+
+    より丁寧な表現に修正（します → いたします）

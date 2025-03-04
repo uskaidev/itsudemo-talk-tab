@@ -1,0 +1,21 @@
+            // プリロードされたトークンを使用（利用可能な場合）
+            let token = preloadedToken;
+            let tokenFetchTime = 0;
+            
+            if (!token) {
+              const tokenStartTime = Date.now();
+              setDebug("No preloaded token, fetching new token");
+              token = await fetchAccessToken();
+              tokenFetchTime = Date.now() - tokenStartTime;
+              setDebug(`Token fetched in ${tokenFetchTime}ms`);
+            } else {
+              setDebug("Using preloaded token (saved API call)");
+            }
+            
+            if (!token || !mounted) return;
+
+            // Add delay before avatar initialization
+            await delay(1000);
+
+            // 計測開始: アバター初期化
+            const avatarInitStartTime = Date.now();

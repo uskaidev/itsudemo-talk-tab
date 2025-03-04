@@ -318,7 +318,7 @@ export default function InteractiveAvatar({
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000;
+  const RETRY_DELAY = 1500; // 2000msから1500msに短縮
 
   // コンポーネントマウント時にトークンをプリロード
   useEffect(() => {
@@ -373,7 +373,6 @@ export default function InteractiveAvatar({
           knowledgeId: knowledgeId,
           voice: {
             rate: AVATAR_CONFIG.VOICE_RATE,
-            emotion: VoiceEmotion.EXCITED,
           },
           language: language,
           disableIdleTimeout: AVATAR_CONFIG.IDLE_TIMEOUT,
@@ -422,7 +421,7 @@ export default function InteractiveAvatar({
             if (!token || !mounted) return;
 
             // Add delay before avatar initialization
-            await delay(1000);
+            await delay(500); // 1000msから500msに短縮
 
             // 計測開始: アバター初期化
             const avatarInitStartTime = Date.now();
@@ -441,7 +440,7 @@ export default function InteractiveAvatar({
             setDebug(`Avatar created successfully in ${avatarInitDuration}ms`);
 
             // Add delay before voice chat initialization
-            await delay(1000);
+            await delay(500); // 1000msから500msに短縮
 
             setDebug("Initializing voice chat...");
             await startVoiceChat(avatarInstance);

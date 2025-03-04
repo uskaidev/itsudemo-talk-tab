@@ -1,0 +1,21 @@
+            // 総合パフォーマンス測定結果のログ出力
+            if (loadTimes.tokenFetchStart && loadTimes.tokenFetchEnd) {
+              const tokenFetchDuration = loadTimes.tokenFetchEnd - loadTimes.tokenFetchStart;
+              const totalInitTime = Date.now() - sessionStartTime;
+              
+              // プリロードによる時間短縮の計算
+              const timeSaved = token === preloadedToken ? tokenFetchDuration : 0;
+              
+              setDebug(`
+Performance metrics:
+- Token fetch time: ${tokenFetchDuration}ms
+- Avatar init time: ${avatarInitDuration}ms
+- Total init time: ${totalInitTime}ms
+- Time saved by preloading: ${timeSaved}ms
+              `.trim());
+            }
+            
+            // Successfully initialized
+            return;
+          } catch (error: any) {
+            retryCount++;

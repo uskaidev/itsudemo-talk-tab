@@ -1,0 +1,8 @@
+commit a699e988339e79618aca4a9735e12e0131eec16a
+Merge: 613c7db ef4ce80
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Wed Feb 26 21:17:31 2025 +0900
+
+    Merge pull request #2 from uskaidev/update-avatar-id
+    
+    Update avatar

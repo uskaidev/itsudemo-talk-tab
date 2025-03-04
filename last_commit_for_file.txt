@@ -1,0 +1,20 @@
+commit bb35b0a0d7587dc7782405cbe7d037057c04f232
+Author: uskaidev <yusuke.koike@newh.co.jp>
+Date:   Tue Mar 4 15:40:18 2025 +0900
+
+    Remove temporary file
+
+diff --git a/components/interactive-avatar.tsx b/components/interactive-avatar.tsx
+index 3dccb6e..32f0093 100644
+--- a/components/interactive-avatar.tsx
++++ b/components/interactive-avatar.tsx
+@@ -55,6 +55,17 @@ export default function InteractiveAvatar({
+   const [currentAvatarMessage, setCurrentAvatarMessage] = useState('');
+   const [currentUserMessage, setCurrentUserMessage] = useState('');
+ 
++  // トークンのプリロードを実装
++  const [preloadedToken, setPreloadedToken] = useState<string | null>(null);
++  
++  // パフォーマンス測定用の状態
++  const [loadTimes, setLoadTimes] = useState<{
++    tokenFetchStart?: number;
