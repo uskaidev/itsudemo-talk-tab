@@ -55,6 +55,17 @@ export default function InteractiveAvatar({
   const [currentAvatarMessage, setCurrentAvatarMessage] = useState('');
   const [currentUserMessage, setCurrentUserMessage] = useState('');
 
+  // トークンのプリロードを実装
+  const [preloadedToken, setPreloadedToken] = useState<string | null>(null);
+  
+  // パフォーマンス測定用の状態
+  const [loadTimes, setLoadTimes] = useState<{
+    tokenFetchStart?: number;
+    tokenFetchEnd?: number;
+    avatarInitStart?: number;
+    avatarInitEnd?: number;
+  }>({});
+
   async function fetchAccessToken() {
     try {
       const response = await fetch("/api/get-access-token", {
@@ -309,6 +320,36 @@ export default function InteractiveAvatar({
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000;
 
+  // コンポーネントマウント時にトークンをプリロード
+  useEffect(() => {
+    let isMounted = true;
+    
+    const preloadToken = async () => {
+      try {
+        const startTime = Date.now();
+        setLoadTimes(prev => ({ ...prev, tokenFetchStart: startTime }));
+        
+        const token = await fetchAccessToken();
+        
+        if (isMounted) {
+          const endTime = Date.now();
+          setLoadTimes(prev => ({ ...prev, tokenFetchEnd: endTime }));
+          
+          setPreloadedToken(token);
+          setDebug(`Token preloaded successfully in ${endTime - startTime}ms`);
+        }
+      } catch (error) {
+        console.error("Failed to preload token:", error);
+      }
+    };
+    
+    preloadToken();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     let cleanup: (() => void) | undefined;
@@ -353,7 +394,8 @@ export default function InteractiveAvatar({
       if (!mounted) return;
 
       try {
-        setDebug("Starting session...");
+        const sessionStartTime = Date.now();
+        setDebug(`Starting session at ${new Date(sessionStartTime).toISOString()}`);
         
         // Clean up existing session if any
         if (avatar.current) {
@@ -363,17 +405,40 @@ export default function InteractiveAvatar({
 
         while (retryCount < MAX_RETRIES) {
           try {
-            const token = await fetchAccessToken();
+            // プリロードされたトークンを使用（利用可能な場合）
+            let token = preloadedToken;
+            let tokenFetchTime = 0;
+            
+            if (!token) {
+              const tokenStartTime = Date.now();
+              setDebug("No preloaded token, fetching new token");
+              token = await fetchAccessToken();
+              tokenFetchTime = Date.now() - tokenStartTime;
+              setDebug(`Token fetched in ${tokenFetchTime}ms`);
+            } else {
+              setDebug("Using preloaded token (saved API call)");
+            }
+            
             if (!token || !mounted) return;
 
             // Add delay before avatar initialization
             await delay(1000);
 
+            // 計測開始: アバター初期化
+            const avatarInitStartTime = Date.now();
+            setLoadTimes(prev => ({ ...prev, avatarInitStart: avatarInitStartTime }));
+            setDebug(`Avatar initialization started at ${new Date(avatarInitStartTime).toISOString()}`);
+            
             const avatarInstance = await initAvatar(token);
             if (!avatarInstance || !mounted) return;
 
+            // 計測終了: アバター初期化
+            const avatarInitEndTime = Date.now();
+            setLoadTimes(prev => ({ ...prev, avatarInitEnd: avatarInitEndTime }));
+            const avatarInitDuration = avatarInitEndTime - (loadTimes.avatarInitStart || avatarInitEndTime);
+            
             avatar.current = avatarInstance;
-            setDebug("Avatar created successfully");
+            setDebug(`Avatar created successfully in ${avatarInitDuration}ms`);
 
             // Add delay before voice chat initialization
             await delay(1000);
@@ -381,6 +446,23 @@ export default function InteractiveAvatar({
             setDebug("Initializing voice chat...");
             await startVoiceChat(avatarInstance);
             setDebug("Voice chat initialized");
+            
+            // 総合パフォーマンス測定結果のログ出力
+            if (loadTimes.tokenFetchStart && loadTimes.tokenFetchEnd) {
+              const tokenFetchDuration = loadTimes.tokenFetchEnd - loadTimes.tokenFetchStart;
+              const totalInitTime = Date.now() - sessionStartTime;
+              
+              // プリロードによる時間短縮の計算
+              const timeSaved = token === preloadedToken ? tokenFetchDuration : 0;
+              
+              setDebug(`
+Performance metrics:
+- Token fetch time: ${tokenFetchDuration}ms
+- Avatar init time: ${avatarInitDuration}ms
+- Total init time: ${totalInitTime}ms
+- Time saved by preloading: ${timeSaved}ms
+              `.trim());
+            }
             
             // Successfully initialized
             return;
