@@ -27,7 +27,7 @@ export default function OpenAIRealtimeAvatar({
   const [conversationState, setConversationState] = useState<'idle' | 'user_talking' | 'avatar_talking'>('idle');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [debugMode, setDebugMode] = useState(true); // デバッグモードを有効化（音声フィルタリングの状態を表示するため）
+  const [debugMode, setDebugMode] = useState(false); // デバッグモードを無効化
   
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const dataChannel = useRef<RTCDataChannel | null>(null);
