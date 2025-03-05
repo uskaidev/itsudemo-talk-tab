@@ -9,13 +9,17 @@ interface OpenAIRealtimeAvatarProps {
   onLoadingStateChange?: (loading: boolean) => void;
   systemPrompt: string;
   useWebSockets?: boolean; // WebSocketsを使用するかどうかのフラグ
+  useAudioFiltering?: boolean; // 音声フィルタリングを有効/無効にするフラグ
+  audioFilterFrequency?: number; // フィルタの周波数（オプション、デフォルト値あり）
 }
 
 export default function OpenAIRealtimeAvatar({
   setShowChat,
   onLoadingStateChange,
   systemPrompt,
-  useWebSockets = false // デフォルトはWebRTC
+  useWebSockets = false, // デフォルトはWebRTC
+  useAudioFiltering = false, // デフォルトは音声フィルタリング無効
+  audioFilterFrequency = 8000 // デフォルトは8kHz
 }: OpenAIRealtimeAvatarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -23,14 +27,56 @@ export default function OpenAIRealtimeAvatar({
   const [conversationState, setConversationState] = useState<'idle' | 'user_talking' | 'avatar_talking'>('idle');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [debugMode, setDebugMode] = useState(false); // デバッグモードを無効化
+  const [debugMode, setDebugMode] = useState(true); // デバッグモードを有効化（音声フィルタリングの状態を表示するため）
   
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const dataChannel = useRef<RTCDataChannel | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
   const mediaStream = useRef<MediaStream | null>(null);
+  const audioContext = useRef<AudioContext | null>(null); // WebAudio APIのコンテキスト
   const stateTimerRef = useRef<NodeJS.Timeout | null>(null); // 状態遷移用タイマー
   const lastStateChangeTimeRef = useRef<number>(Date.now()); // 最後に状態が変化した時間
+  const speechTimerRef = useRef<NodeJS.Timeout | null>(null); // 短い発話をフィルタリングするためのタイマー
+  const speechStartTimeRef = useRef<number | null>(null); // 発話開始時間
+
+  // 音声処理を行う関数
+  const processAudioStream = useCallback((stream: MediaStream): MediaStream => {
+    if (!useAudioFiltering) {
+      console.log("Audio filtering disabled - using raw stream");
+      return stream;
+    }
+    
+    try {
+      console.log(`Audio filtering enabled with frequency: ${audioFilterFrequency}Hz`);
+      
+      // AudioContextを作成
+      const context = new AudioContext();
+      audioContext.current = context;
+      
+      // ストリームからソースを作成
+      const source = context.createMediaStreamSource(stream);
+      
+      // ローパスフィルターを作成
+      const filter = context.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = audioFilterFrequency;
+      console.log(`Created lowpass filter with frequency: ${filter.frequency.value}Hz`);
+      
+      // 処理済み音声の出力先を作成
+      const destination = context.createMediaStreamDestination();
+      
+      // ノードを接続
+      source.connect(filter);
+      filter.connect(destination);
+      
+      // 処理済みのストリームを返す
+      return destination.stream;
+    } catch (error) {
+      console.error("Audio processing error:", error);
+      // エラー時は元のストリームを返す
+      return stream;
+    }
+  }, [useAudioFiltering, audioFilterFrequency]);
 
   // WebRTCを使用した接続
   const connectWithWebRTC = useCallback(async () => {
@@ -62,11 +108,18 @@ export default function OpenAIRealtimeAvatar({
       }
 
       // ブラウザでマイク入力用のローカルオーディオトラックを追加
-      const ms = await navigator.mediaDevices.getUserMedia({
+      const rawStream = await navigator.mediaDevices.getUserMedia({
         audio: true
       });
-      mediaStream.current = ms;
-      pc.addTrack(ms.getTracks()[0]);
+      
+      // 音声処理を適用
+      const processedStream = processAudioStream(rawStream);
+      mediaStream.current = processedStream;
+      
+      // 処理済みのストリームをRTCPeerConnectionに追加
+      processedStream.getAudioTracks().forEach(track => {
+        pc.addTrack(track, processedStream);
+      });
 
       // イベント送受信用のデータチャネルの設定
       const dc = pc.createDataChannel("oai-events");
@@ -87,7 +140,7 @@ export default function OpenAIRealtimeAvatar({
           type: "session.update",
           session: {
             instructions: systemPrompt,
-            voice: "sol", // 変更: 'verse'から'sol'に変更
+            voice: "sol" // 変更: 'verse'から'sol'に変更
           }
         }));
       });
@@ -113,33 +166,71 @@ export default function OpenAIRealtimeAvatar({
         
         // イベント処理（優先順位付き）
         
-        // 1. ユーザーの発話（最優先）
+        // 1. ユーザーの発話（最優先）- 短い相槌をフィルタリング
         if (event.type === "input_audio_buffer.speech_started") {
-          console.log("User started talking");
-          setConversationState('user_talking');
-          lastStateChangeTimeRef.current = Date.now();
+          console.log("Speech detected - evaluating if it's a real utterance or just a backchannel");
           
-          // タイマーをクリア
-          if (stateTimerRef.current) {
-            clearTimeout(stateTimerRef.current);
-            stateTimerRef.current = null;
+          // 発話開始時間を記録
+          speechStartTimeRef.current = Date.now();
+          
+          // 短い相槌を無視するためのタイマーを設定
+          if (speechTimerRef.current) {
+            clearTimeout(speechTimerRef.current);
           }
+          
+          // 短い相槌を無視するためのタイマーを設定
+          speechTimerRef.current = setTimeout(() => {
+            // 一定時間（例：600ms）以上続いた場合のみ、ユーザー発話状態に移行
+            console.log("Speech continued for threshold period - treating as real utterance");
+            setConversationState('user_talking');
+            lastStateChangeTimeRef.current = Date.now();
+            
+            // タイマーをクリア
+            if (stateTimerRef.current) {
+              clearTimeout(stateTimerRef.current);
+              stateTimerRef.current = null;
+            }
+          }, 600);
+          
           return; // 他のイベント処理をスキップ
         }
         
         // 2. ユーザーの発話終了
-        if (event.type === "input_audio_buffer.speech_stopped" && conversationState === 'user_talking') {
-          console.log("User stopped talking");
+        if (event.type === "input_audio_buffer.speech_stopped") {
+          console.log("Speech stopped event received");
           
-          // タイマーをクリア
-          if (stateTimerRef.current) {
-            clearTimeout(stateTimerRef.current);
+          // 短い発話フィルタリングタイマーをクリア
+          if (speechTimerRef.current) {
+            clearTimeout(speechTimerRef.current);
+            speechTimerRef.current = null;
           }
           
-          // ユーザー発話終了後は即座にidle状態に戻す（ディレイなし）
-          console.log("Returning to idle state after user talking");
-          setConversationState('idle');
-          lastStateChangeTimeRef.current = Date.now();
+          // 発話の長さを計算
+          const speechDuration = speechStartTimeRef.current ? Date.now() - speechStartTimeRef.current : 0;
+          console.log(`Speech duration: ${speechDuration}ms`);
+          
+          // 非常に短い発話は無視（相槌や周辺ノイズと判断）
+          if (speechDuration < 500) {
+            console.log("Ignoring very short utterance (likely backchannel or noise)");
+            return;
+          }
+          
+          // ユーザーが実際に話していた場合のみ処理
+          if (conversationState === 'user_talking') {
+            console.log("User stopped talking");
+            
+            // タイマーをクリア
+            if (stateTimerRef.current) {
+              clearTimeout(stateTimerRef.current);
+            }
+            
+            // ユーザー発話終了後、少し待ってからidle状態に戻す
+            stateTimerRef.current = setTimeout(() => {
+              console.log("Returning to idle state after user talking");
+              setConversationState('idle');
+              lastStateChangeTimeRef.current = Date.now();
+            }, 1200); // 1.2秒のディレイに延長
+          }
           return;
         }
         
@@ -168,14 +259,14 @@ export default function OpenAIRealtimeAvatar({
             clearTimeout(stateTimerRef.current);
           }
           
-          // 2秒後に発話状態を解除するタイマーを設定
+          // 3秒後に発話状態を解除するタイマーを設定（2秒から3秒に延長）
           stateTimerRef.current = setTimeout(() => {
             console.log("Avatar talking timer expired");
             if (conversationState === 'avatar_talking') {
               setConversationState('idle');
               lastStateChangeTimeRef.current = Date.now();
             }
-          }, 2000);
+          }, 3000);
           return;
         }
         
@@ -237,7 +328,7 @@ export default function OpenAIRealtimeAvatar({
       setIsLoading(false);
       onLoadingStateChange?.(false);
     }
-  }, [onLoadingStateChange, systemPrompt]);
+  }, [onLoadingStateChange, systemPrompt, processAudioStream]);
 
   // WebSocketsを使用した接続
   const connectWithWebSockets = useCallback(async () => {
@@ -300,7 +391,7 @@ export default function OpenAIRealtimeAvatar({
     } else {
       await connectWithWebRTC();
     }
-  }, [useWebSockets, connectWithWebRTC, connectWithWebSockets]);
+  }, [useWebSockets, connectWithWebRTC, connectWithWebSockets, useAudioFiltering, audioFilterFrequency]);
 
   const disconnectFromOpenAI = useCallback(async () => {
     try {
@@ -317,6 +408,17 @@ export default function OpenAIRealtimeAvatar({
       // メディアストリームのトラックを停止
       if (mediaStream.current) {
         mediaStream.current.getTracks().forEach(track => track.stop());
+      }
+      
+      // AudioContextのクローズ
+      if (audioContext.current && audioContext.current.state !== 'closed') {
+        try {
+          await audioContext.current.close();
+          console.log("AudioContext closed successfully");
+        } catch (audioError) {
+          console.error("Error closing AudioContext:", audioError);
+        }
+        audioContext.current = null;
       }
       
       // タイマーのクリア
@@ -452,9 +554,16 @@ export default function OpenAIRealtimeAvatar({
       const now = Date.now();
       const elapsedTime = now - lastStateChangeTimeRef.current;
       
-      // アバーが話している状態が10秒以上続いている場合はリセット
-      if (conversationState === 'avatar_talking' && elapsedTime > 10000) {
+      // アバターが話している状態が15秒以上続いている場合はリセット（10秒から15秒に延長）
+      if (conversationState === 'avatar_talking' && elapsedTime > 15000) {
         console.log("Avatar talking state reset due to timeout");
+        setConversationState('idle');
+        lastStateChangeTimeRef.current = now;
+      }
+      
+      // ユーザーが話している状態が10秒以上続いている場合もリセット
+      if (conversationState === 'user_talking' && elapsedTime > 10000) {
+        console.log("User talking state reset due to timeout");
         setConversationState('idle');
         lastStateChangeTimeRef.current = now;
       }
@@ -471,7 +580,7 @@ export default function OpenAIRealtimeAvatar({
             <div className="w-full bg-black rounded-lg overflow-hidden">
               <div className="relative w-full pt-[56.25%]">
                 <div className="absolute top-0 left-0 w-full h-full">
-                  {/* デバッグ表示 */}
+                  {/* デバッグ表示 - 必要に応じて有効化 */}
                   {debugMode && (
                     <div className="absolute top-4 left-4 z-30 bg-black/70 text-white p-2 rounded text-xs">
                       <div>Conversation state: {conversationState}</div>
@@ -494,6 +603,18 @@ export default function OpenAIRealtimeAvatar({
                         >
                           Avatar
                         </button>
+                      </div>
+                      <div className="mt-2">
+                        <div>Audio filtering: {useAudioFiltering ? 
+                          <span className="text-green-400">ON ({audioFilterFrequency}Hz)</span> : 
+                          <span className="text-red-400">OFF</span>}
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <div>Speech events:</div>
+                        <div id="speech-events" className="max-h-20 overflow-y-auto text-[10px]">
+                          {/* 最新の音声イベントがここに表示される */}
+                        </div>
                       </div>
                     </div>
                   )}

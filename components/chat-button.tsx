@@ -35,6 +35,8 @@ export default function ChatButton({ knowledgeId, avatarId, language }: ChatButt
                   setShowChat={setShowChat}
                   onLoadingStateChange={handleLoadingStateChange}
                   useWebSockets={false} // WebRTCを使用（HTTPSが必要）
+                  useAudioFiltering={true} // 音声フィルタリングを有効化
+                  audioFilterFrequency={8000} // ローパスフィルタの周波数（Hz）
                   systemPrompt={`
 #目的・ペルソナ
 あなたは、{{#エリア}}にあるサービス付き高齢者向け住宅（サ高住）の{{#施設}}のアシスタントです。名前は「なつみ」です。65歳以上の入居者の方々に、{{#支援内容}}について、ゆっくりとした日本語で、高齢者にとってわかりやすく伝える役割を担っています。
