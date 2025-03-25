@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
         },
         body: JSON.stringify({
           model: "gpt-4o-realtime-preview-2024-12-17",
-          voice: "sol", // 日本語に適した声（verseからsolに変更）
+          voice: "coral", // 変更: 'verse'から'coral'に変更
         }),
       });
 

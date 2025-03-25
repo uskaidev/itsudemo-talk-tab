@@ -140,7 +140,7 @@ export default function OpenAIRealtimeAvatar({
           type: "session.update",
           session: {
             instructions: systemPrompt,
-            voice: "sol" // 変更: 'verse'から'sol'に変更
+            voice: "coral", // 変更: 'sol'から'coral'に変更
           }
         }));
       });
