@@ -111,7 +111,7 @@ export const DAILY_VIDEOS: Record<string, {
     title: "3月26日の動画"
   },
   "03-27": {
-    videoId: "_Rp1zaI-XC",
+    videoId: "_Rp1zaI-XCk",
     title: "3月27日の動画"
   },
   "03-28": {
