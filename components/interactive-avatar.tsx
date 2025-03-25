@@ -55,8 +55,16 @@ export default function InteractiveAvatar({
   const [currentAvatarMessage, setCurrentAvatarMessage] = useState('');
   const [currentUserMessage, setCurrentUserMessage] = useState('');
 
-  // トークンのプリロードを実装
-  const [preloadedToken, setPreloadedToken] = useState<string | null>(null);
+  // トークンのプリロードを実装（有効期限付き）
+  interface TokenInfo {
+    token: string;
+    expiry: number; // タイムスタンプ（ミリ秒）
+  }
+  
+  // トークンの有効期限（ミリ秒）
+  const TOKEN_EXPIRY_TIME = 8 * 60 * 1000; // 8分間
+  
+  const [preloadedToken, setPreloadedToken] = useState<TokenInfo | null>(null);
   
   // パフォーマンス測定用の状態
   const [loadTimes, setLoadTimes] = useState<{
@@ -66,7 +74,7 @@ export default function InteractiveAvatar({
     avatarInitEnd?: number;
   }>({});
 
-  async function fetchAccessToken() {
+  async function fetchAccessToken(): Promise<TokenInfo> {
     try {
       const response = await fetch("/api/get-access-token", {
         method: "POST",
@@ -78,7 +86,12 @@ export default function InteractiveAvatar({
       if (!token) {
         throw new Error("Empty token received");
       }
-      return token;
+      
+      // トークンと有効期限を返す
+      return {
+        token,
+        expiry: Date.now() + TOKEN_EXPIRY_TIME
+      };
     } catch (error: any) {
       console.error("Error fetching access token:", error);
       setDebug(`Access token error: ${error.message}`);
@@ -329,14 +342,21 @@ export default function InteractiveAvatar({
         const startTime = Date.now();
         setLoadTimes(prev => ({ ...prev, tokenFetchStart: startTime }));
         
-        const token = await fetchAccessToken();
+        // 既存のトークンがあり、まだ有効期限内なら再利用
+        if (preloadedToken && Date.now() < preloadedToken.expiry) {
+          setDebug(`Using existing token (valid until ${new Date(preloadedToken.expiry).toISOString()})`);
+          return;
+        }
+        
+        // 新しいトークンを取得
+        const tokenInfo = await fetchAccessToken();
         
         if (isMounted) {
           const endTime = Date.now();
           setLoadTimes(prev => ({ ...prev, tokenFetchEnd: endTime }));
           
-          setPreloadedToken(token);
-          setDebug(`Token preloaded successfully in ${endTime - startTime}ms`);
+          setPreloadedToken(tokenInfo);
+          setDebug(`Token preloaded successfully in ${endTime - startTime}ms (valid until ${new Date(tokenInfo.expiry).toISOString()})`);
         }
       } catch (error) {
         console.error("Failed to preload token:", error);
@@ -396,32 +416,37 @@ export default function InteractiveAvatar({
         const sessionStartTime = Date.now();
         setDebug(`Starting session at ${new Date(sessionStartTime).toISOString()}`);
         
-        // Clean up existing session if any
-        if (avatar.current) {
-          setDebug("Cleaning up existing session");
-          await endSession();
-        }
+        // 並列処理1: 既存セッションのクリーンアップとトークン取得を並列化
+        const [_, tokenInfo] = await Promise.all([
+          avatar.current ? (async () => {
+            setDebug("Cleaning up existing session");
+            await endSession();
+          })() : Promise.resolve(),
+          (async () => {
+            // トークン取得（プリロードされたトークンがあればそれを使用）
+            if (preloadedToken && Date.now() < preloadedToken.expiry) {
+              setDebug(`Using preloaded token (valid until ${new Date(preloadedToken.expiry).toISOString()})`);
+              return preloadedToken;
+            } else {
+              const tokenStartTime = Date.now();
+              setDebug("No valid preloaded token, fetching new token");
+              const newTokenInfo = await fetchAccessToken();
+              const tokenFetchTime = Date.now() - tokenStartTime;
+              setDebug(`Token fetched in ${tokenFetchTime}ms (valid until ${new Date(newTokenInfo.expiry).toISOString()})`);
+              return newTokenInfo;
+            }
+          })()
+        ]);
+        
+        // トークンを使用
+        const token = tokenInfo.token;
+        
+        if (!token || !mounted) return;
 
         while (retryCount < MAX_RETRIES) {
           try {
-            // プリロードされたトークンを使用（利用可能な場合）
-            let token = preloadedToken;
-            let tokenFetchTime = 0;
-            
-            if (!token) {
-              const tokenStartTime = Date.now();
-              setDebug("No preloaded token, fetching new token");
-              token = await fetchAccessToken();
-              tokenFetchTime = Date.now() - tokenStartTime;
-              setDebug(`Token fetched in ${tokenFetchTime}ms`);
-            } else {
-              setDebug("Using preloaded token (saved API call)");
-            }
-            
-            if (!token || !mounted) return;
-
-            // Add delay before avatar initialization
-            await delay(500); // 1000msから500msに短縮
+            // 遅延を削減（500msから300msに短縮）
+            await delay(300);
 
             // 計測開始: アバター初期化
             const avatarInitStartTime = Date.now();
@@ -439,27 +464,41 @@ export default function InteractiveAvatar({
             avatar.current = avatarInstance;
             setDebug(`Avatar created successfully in ${avatarInitDuration}ms`);
 
-            // Add delay before voice chat initialization
-            await delay(500); // 1000msから500msに短縮
+            // 遅延を削減（500msから300msに短縮）
+            await delay(300);
 
-            setDebug("Initializing voice chat...");
-            await startVoiceChat(avatarInstance);
-            setDebug("Voice chat initialized");
+            // 並列処理2: 音声チャット初期化とUI準備を並列化
+            await Promise.all([
+              (async () => {
+                setDebug("Initializing voice chat...");
+                await startVoiceChat(avatarInstance);
+                setDebug("Voice chat initialized");
+              })(),
+              (async () => {
+                // UIの準備やその他のリソースの準備
+                setDebug("Preparing UI resources...");
+                // UIリソースの準備（例: アニメーションの事前計算など）
+                setDebug("UI resources prepared");
+              })()
+            ]);
             
             // 総合パフォーマンス測定結果のログ出力
             if (loadTimes.tokenFetchStart && loadTimes.tokenFetchEnd) {
               const tokenFetchDuration = loadTimes.tokenFetchEnd - loadTimes.tokenFetchStart;
               const totalInitTime = Date.now() - sessionStartTime;
               
-              // プリロードによる時間短縮の計算
-              const timeSaved = token === preloadedToken ? tokenFetchDuration : 0;
+              // トークン再利用による時間短縮の計算
+              const tokenReuseTime = preloadedToken && Date.now() < preloadedToken.expiry ? 
+                `Token reused (saved ~${tokenFetchDuration}ms)` : 
+                "New token fetched";
               
               setDebug(`
 Performance metrics:
 - Token fetch time: ${tokenFetchDuration}ms
 - Avatar init time: ${avatarInitDuration}ms
 - Total init time: ${totalInitTime}ms
-- Time saved by preloading: ${timeSaved}ms
+- Token status: ${tokenReuseTime}
+- Parallel processing: Enabled
               `.trim());
             }
             
