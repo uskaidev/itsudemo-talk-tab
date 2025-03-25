@@ -105,5 +105,29 @@ export const DAILY_VIDEOS: Record<string, {
   "03-10": {
     videoId: "3ujvhf4zpqo",
     title: "3月10日の動画"
+  },
+  "03-26": {
+    videoId: "JOfLm_LBWAE",
+    title: "3月26日の動画"
+  },
+  "03-27": {
+    videoId: "_Rp1zaI-XCk",
+    title: "3月27日の動画"
+  },
+  "03-28": {
+    videoId: "M-LYT-6kzWs",
+    title: "3月28日の動画"
+  },
+  "03-29": {
+    videoId: "HagWj9-tj_8",
+    title: "3月29日の動画"
+  },
+  "03-30": {
+    videoId: "8ovWu5j5TAU",
+    title: "3月30日の動画"
+  },
+  "03-31": {
+    videoId: "FLTIhTqVPO8",
+    title: "3月31日の動画"
   }
 };
